@@ -52,7 +52,7 @@ public interface MemberController {
     @GetMapping("api/organizations/{organizationId}/members")
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
-    GetMembersResponse getMembersByOrganization(
+    GetMembersByOrganizationResponse getMembersByOrganization(
             @Parameter(
                     name = "page number",
                     description = "Page number to retrieve"

@@ -30,6 +30,7 @@ public class MemberDefaultController implements MemberController {
     private final UserService userService;
     private final OrganizationService organizationService;
     private final MembersToResponseFunction membersToResponse;
+    private final MembersByOrganizationToResponseFunction membersByOrganizationToResponse;
     private final MemberToResponseFunction memberToResponse;
     private final RequestToMemberFunction requestToMember;
     private final UpdateMemberWithRequestFunction updateMemberWithRequest;
@@ -42,6 +43,7 @@ public class MemberDefaultController implements MemberController {
             UserService userService,
             OrganizationService organizationService,
             MembersToResponseFunction membersToResponse,
+            MembersByOrganizationToResponseFunction membersByOrganizationToResponse,
             MemberToResponseFunction memberToResponse,
             RequestToMemberFunction requestToMember,
             UpdateMemberWithRequestFunction updateMemberWithRequest,
@@ -52,6 +54,7 @@ public class MemberDefaultController implements MemberController {
         this.userService = userService;
         this.organizationService = organizationService;
         this.membersToResponse = membersToResponse;
+        this.membersByOrganizationToResponse = membersByOrganizationToResponse;
         this.memberToResponse = memberToResponse;
         this.requestToMember = requestToMember;
         this.updateMemberWithRequest = updateMemberWithRequest;
@@ -71,7 +74,7 @@ public class MemberDefaultController implements MemberController {
     }
 
     @Override
-    public GetMembersResponse getMembersByOrganization(int page, int size, BigInteger organizationId) {
+    public GetMembersByOrganizationResponse getMembersByOrganization(int page, int size, BigInteger organizationId) {
         PageRequest pageRequest = PageRequest.of(page, size);
 
         Optional<Organization> organizationOptional = organizationService.find(organizationId);
@@ -85,7 +88,7 @@ public class MemberDefaultController implements MemberController {
 
         Integer count = service.findAllByOrganizationAndIsStillMember(organization, true, Pageable.unpaged()).getNumberOfElements();
 
-        return membersToResponse.apply(service.findAllByOrganizationAndIsStillMember(organization, true, pageRequest), count);
+        return membersByOrganizationToResponse.apply(service.findAllByOrganizationAndIsStillMember(organization, true, pageRequest), count);
     }
 
     @Override
