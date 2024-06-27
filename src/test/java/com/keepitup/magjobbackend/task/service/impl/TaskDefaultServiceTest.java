@@ -2,6 +2,8 @@ package com.keepitup.magjobbackend.task.service.impl;
 
 import com.keepitup.magjobbackend.organization.entity.Organization;
 import com.keepitup.magjobbackend.task.entity.Task;
+import com.keepitup.magjobbackend.task.entity.TaskPriority;
+import com.keepitup.magjobbackend.task.entity.TaskStatus;
 import com.keepitup.magjobbackend.task.repository.api.TaskRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -135,19 +137,19 @@ class TaskDefaultServiceTest {
     }
 
     @Test
-    void testFindAllByIsDone() {
+    void testFindAllByStatus() {
         // Arrange
-        boolean isDone = true;
+        TaskStatus status = TaskStatus.NEW;
         Page<Task> tasks = new PageImpl<>(List.of(new Task()));
         PageRequest pageRequest = PageRequest.of(0, 1);
-        when(taskRepository.findAllByIsDone(isDone, pageRequest)).thenReturn(tasks);
+        when(taskRepository.findAllByStatus(status, pageRequest)).thenReturn(tasks);
 
         // Act
-        Page<Task> result = taskService.findAllByIsDone(isDone, pageRequest);
+        Page<Task> result = taskService.findAllByStatus(status, pageRequest);
 
         // Assert
         assertEquals(tasks.getNumberOfElements(), result.getNumberOfElements());
-        verify(taskRepository, times(1)).findAllByIsDone(isDone, pageRequest);
+        verify(taskRepository, times(1)).findAllByStatus(status, pageRequest);
     }
 
     @Test
@@ -167,19 +169,19 @@ class TaskDefaultServiceTest {
     }
 
     @Test
-    void testFindAllByIsImportant() {
+    void testFindAllByPriority() {
         // Arrange
-        boolean isImportant = true;
+        TaskPriority priority = TaskPriority.MEDIUM;
         Page<Task> tasks = new PageImpl<>(List.of(new Task()));
         PageRequest pageRequest = PageRequest.of(0, 1);
-        when(taskRepository.findAllByIsImportant(isImportant, pageRequest)).thenReturn(tasks);
+        when(taskRepository.findAllByPriority(priority, pageRequest)).thenReturn(tasks);
 
         // Act
-        Page<Task> result = taskService.findAllByIsImportant(isImportant, pageRequest);
+        Page<Task> result = taskService.findAllByPriority(priority, pageRequest);
 
         // Assert
         assertEquals(tasks.getNumberOfElements(), result.getNumberOfElements());
-        verify(taskRepository, times(1)).findAllByIsImportant(isImportant, pageRequest);
+        verify(taskRepository, times(1)).findAllByPriority(priority, pageRequest);
     }
 
     @Test
@@ -208,7 +210,6 @@ class TaskDefaultServiceTest {
 
         // Assert
         assertNotNull(task.getDateOfCreation());
-        assertFalse(task.getIsDone());
         verify(taskRepository, times(1)).save(task);
     }
 
@@ -236,20 +237,6 @@ class TaskDefaultServiceTest {
         taskService.update(task);
 
         // Assert
-        verify(taskRepository, times(1)).save(task);
-    }
-
-    @Test
-    void testCompleteTask() {
-        // Arrange
-        Task task = new Task();
-
-        // Act
-        taskService.completeTask(task);
-
-        // Assert
-        assertNotNull(task.getDateOfCompletion());
-        assertTrue(task.getIsDone());
         verify(taskRepository, times(1)).save(task);
     }
 }

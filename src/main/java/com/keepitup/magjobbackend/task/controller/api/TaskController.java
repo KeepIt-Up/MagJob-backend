@@ -51,7 +51,6 @@ public interface TaskController {
             BigInteger id
     );
 
-
     @Operation(summary = "Get Tasks By Organization")
     @GetMapping("api/tasks/organizations/{organizationId}")
     @ResponseStatus(HttpStatus.OK)
@@ -104,6 +103,32 @@ public interface TaskController {
             BigInteger id
     );
 
+    @Operation(summary = "Get Tasks By Creator")
+    @GetMapping("api/tasks/members/{creatorId}")
+    @ResponseStatus(HttpStatus.OK)
+    @ResponseBody
+    GetTasksResponse getTasksByCreator(
+            @Parameter(
+                    name = "page number",
+                    description = "Page number to retrieve"
+            )
+            @RequestParam(defaultValue = "#{pageConfig.number}")
+            int page,
+            @Parameter(
+                    name = "page size",
+                    description = "Number of records per page"
+            )
+            @RequestParam(defaultValue = "#{pageConfig.size}")
+            int size,
+            @Parameter(
+                    name = "creatorId",
+                    description = "Creator id value",
+                    required = true
+            )
+            @PathVariable("creatorId")
+            BigInteger id
+    );
+
     @Operation(summary = "Create Task")
     @PostMapping("api/tasks")
     @ResponseStatus(HttpStatus.CREATED)
@@ -139,19 +164,6 @@ public interface TaskController {
             )
             @RequestBody
             PatchTaskRequest patchTaskRequest
-    );
-
-    @Operation(summary = "Set Task as completed")
-    @PostMapping("api/tasks/{id}/complete")
-    @ResponseStatus(HttpStatus.OK)
-    void completeTask(
-        @Parameter(
-                name = "id",
-                description = "Task id value",
-                required = true
-        )
-        @PathVariable
-        BigInteger id
     );
 
     @Operation(summary = "Delete Task")

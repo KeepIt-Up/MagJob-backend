@@ -14,12 +14,13 @@ public class UpdateTaskWithRequestFunction implements BiFunction<Task, PatchTask
                 .id(task.getId())
                 .title(request.getTitle())
                 .description(request.getDescription())
-                .isDone(task.getIsDone())
+                .status(request.getStatus())
                 .dateOfCreation(task.getDateOfCreation())
                 .dateOfCompletion(task.getDateOfCompletion())
                 .deadLine(request.getDeadLine())
-                .isImportant(request.getIsImportant())
+                .priority(request.getPriority())
                 .organization(task.getOrganization())
+                .creator(task.getCreator())
                 .build();
     }
 }

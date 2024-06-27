@@ -17,8 +17,8 @@ public class TaskToResponseFunction implements Function<Task, GetTaskResponse> {
                 .dateOfCompletion(task.getDateOfCompletion())
                 .dateOfCreation(task.getDateOfCreation())
                 .deadLine(task.getDeadLine())
-                .isImportant(task.getIsImportant())
-                .isDone(task.getIsDone())
+                .status(task.getStatus())
+                .priority(task.getPriority())
                 .build();
     }
 }

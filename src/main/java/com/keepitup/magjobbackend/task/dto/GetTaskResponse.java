@@ -1,5 +1,7 @@
 package com.keepitup.magjobbackend.task.dto;
 
+import com.keepitup.magjobbackend.task.entity.TaskPriority;
+import com.keepitup.magjobbackend.task.entity.TaskStatus;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 
@@ -21,19 +23,23 @@ public class GetTaskResponse {
 
     @Schema(description = "Task title")
     private String title;
+
     @Schema(description = "Task description")
     private String description;
 
     @Schema(description = "Task date of creation")
     private ZonedDateTime dateOfCreation;
+
     @Schema(description = "Task date of completion")
     private ZonedDateTime dateOfCompletion;
+
     @Schema(description = "Task deadline")
     private ZonedDateTime deadLine;
 
-    @Schema(description = "Task is important?")
-    private Boolean isImportant;
-    @Schema(description = "Task is done?")
-    private Boolean isDone;
+    @Schema(description = "Task priority")
+    private TaskPriority priority;
+
+    @Schema(description = "Task status")
+    private TaskStatus status;
 
 }

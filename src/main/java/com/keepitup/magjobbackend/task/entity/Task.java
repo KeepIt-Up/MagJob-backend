@@ -1,6 +1,7 @@
 package com.keepitup.magjobbackend.task.entity;
 
 import com.keepitup.magjobbackend.assignee.entity.Assignee;
+import com.keepitup.magjobbackend.member.entity.Member;
 import com.keepitup.magjobbackend.organization.entity.Organization;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
@@ -32,8 +33,8 @@ public class Task {
     @Column(name = "description")
     private String description;
 
-    @Column(name = "is_done")
-    private Boolean isDone;
+    @Column(name = "status")
+    private TaskStatus status;
 
     @Column(name = "date_of_creation")
     private ZonedDateTime dateOfCreation;
@@ -44,8 +45,12 @@ public class Task {
     @Column(name = "dead_line")
     private ZonedDateTime deadLine;
 
-    @Column(name = "is_important")
-    private Boolean isImportant;
+    @Column(name = "priority")
+    private TaskPriority priority;
+
+    @ManyToOne
+    @JoinColumn(name = "member_id")
+    private Member creator;
 
     @ManyToOne
     @JoinColumn(name = "organization_id")

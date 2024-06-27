@@ -3,6 +3,7 @@ package com.keepitup.magjobbackend.task.controller.impl;
 import com.keepitup.magjobbackend.assignee.service.api.AssigneeService;
 import com.keepitup.magjobbackend.configuration.Constants;
 import com.keepitup.magjobbackend.configuration.SecurityService;
+import com.keepitup.magjobbackend.member.entity.Member;
 import com.keepitup.magjobbackend.member.service.api.MemberService;
 import com.keepitup.magjobbackend.organization.entity.Organization;
 import com.keepitup.magjobbackend.organization.service.api.OrganizationService;
@@ -17,7 +18,6 @@ import com.keepitup.magjobbackend.task.function.TaskToResponseFunction;
 import com.keepitup.magjobbackend.task.function.TasksToResponseFunction;
 import com.keepitup.magjobbackend.task.function.UpdateTaskWithRequestFunction;
 import com.keepitup.magjobbackend.task.service.api.TaskService;
-import com.keepitup.magjobbackend.user.service.api.UserService;
 import lombok.extern.java.Log;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -127,11 +127,34 @@ public class TaskDefaultController implements TaskController {
     }
 
     @Override
+    public GetTasksResponse getTasksByCreator(int page, int size, BigInteger id) {
+        Member creator = memberService.find(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND)
+                );
+
+        if(!securityService.belongsToOrganization(creator.getOrganization())) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN);
+        }
+
+        PageRequest pageRequest = PageRequest.of(page, size);
+
+        Integer count = service.findAllByCreator(creator, Pageable.unpaged()).getNumberOfElements();
+
+        return tasksToResponse.apply(service.findAllByCreator(creator, pageRequest), count);
+    }
+
+    @Override
     public GetTaskResponse createTask(PostTaskRequest postTaskRequest) {
 
         Optional<Organization> organization = organizationService.find(postTaskRequest.getOrganization());
 
+        Optional<Member> creator = memberService.find(postTaskRequest.getCreator());
+
         if (organization.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        }
+
+        if (creator.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
 
@@ -170,17 +193,6 @@ public class TaskDefaultController implements TaskController {
         service.update(updateTaskWithRequest.apply(task, patchTaskRequest));
 
         return taskToResponse.apply(service.find(id).get());
-    }
-
-    @Override
-    public void completeTask(BigInteger id) {
-        service.find(id)
-                .ifPresentOrElse(
-                        service::completeTask,
-                        () -> {
-                            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
-                        }
-                );
     }
 
     @Override

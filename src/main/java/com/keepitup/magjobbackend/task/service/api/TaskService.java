@@ -1,7 +1,10 @@
 package com.keepitup.magjobbackend.task.service.api;
 
+import com.keepitup.magjobbackend.member.entity.Member;
 import com.keepitup.magjobbackend.organization.entity.Organization;
 import com.keepitup.magjobbackend.task.entity.Task;
+import com.keepitup.magjobbackend.task.entity.TaskPriority;
+import com.keepitup.magjobbackend.task.entity.TaskStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -21,15 +24,17 @@ public interface TaskService {
 
     Page<Task> findAllByOrganization(Organization organization, Pageable pageable);
 
+    Page<Task> findAllByCreator(Member member, Pageable pageable);
+
     Page<Task> findAllByDateOfCreation(ZonedDateTime dateOfCreation, Pageable pageable);
 
     Page<Task> findAllByDateOfCompletion(ZonedDateTime dateOfCompletion, Pageable pageable);
 
-    Page<Task> findAllByIsDone(Boolean isDone, Pageable pageable);
+    Page<Task> findAllByStatus(TaskStatus status, Pageable pageable);
 
     Page<Task> findAllByDescription(String description, Pageable pageable);
 
-    Page<Task> findAllByIsImportant(Boolean isImportant, Pageable pageable);
+    Page<Task> findAllByPriority(TaskPriority priority, Pageable pageable);
 
     Page<Task> findAllByDeadLine(ZonedDateTime deadLine, Pageable pageable);
 
@@ -38,6 +43,4 @@ public interface TaskService {
     void delete(BigInteger id);
 
     void update(Task task);
-
-    void completeTask(Task task);
 }

@@ -1,7 +1,10 @@
 package com.keepitup.magjobbackend.task.service.impl;
 
+import com.keepitup.magjobbackend.member.entity.Member;
 import com.keepitup.magjobbackend.organization.entity.Organization;
 import com.keepitup.magjobbackend.task.entity.Task;
+import com.keepitup.magjobbackend.task.entity.TaskPriority;
+import com.keepitup.magjobbackend.task.entity.TaskStatus;
 import com.keepitup.magjobbackend.task.repository.api.TaskRepository;
 import com.keepitup.magjobbackend.task.service.api.TaskService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,6 +52,11 @@ public class TaskDefaultService implements TaskService {
     }
 
     @Override
+    public Page<Task> findAllByCreator(Member member, Pageable pageable) {
+        return taskRepository.findAllByCreator(member, pageable);
+    }
+
+    @Override
     public Page<Task> findAllByDateOfCreation(ZonedDateTime dateOfCreation, Pageable pageable) {
         return taskRepository.findAllByDateOfCreation(dateOfCreation, pageable);
     }
@@ -59,8 +67,8 @@ public class TaskDefaultService implements TaskService {
     }
 
     @Override
-    public Page<Task> findAllByIsDone(Boolean isDone, Pageable pageable) {
-        return taskRepository.findAllByIsDone(isDone, pageable);
+    public Page<Task> findAllByStatus(TaskStatus status, Pageable pageable) {
+        return taskRepository.findAllByStatus(status, pageable);
     }
 
     @Override
@@ -69,8 +77,8 @@ public class TaskDefaultService implements TaskService {
     }
 
     @Override
-    public Page<Task> findAllByIsImportant(Boolean isImportant, Pageable pageable) {
-        return taskRepository.findAllByIsImportant(isImportant, pageable);
+    public Page<Task> findAllByPriority(TaskPriority priority, Pageable pageable) {
+        return taskRepository.findAllByPriority(priority, pageable);
     }
 
     @Override
@@ -81,7 +89,6 @@ public class TaskDefaultService implements TaskService {
     @Override
     public void create(Task task) {
         task.setDateOfCreation(ZonedDateTime.now());
-        task.setIsDone(false);
         taskRepository.save(task);
     }
 
@@ -92,13 +99,9 @@ public class TaskDefaultService implements TaskService {
 
     @Override
     public void update(Task task) {
-        taskRepository.save(task);
-    }
-
-    @Override
-    public void completeTask(Task task) {
-        task.setDateOfCompletion(ZonedDateTime.now());
-        task.setIsDone(true);
+        if (task.getStatus() == TaskStatus.DONE) {
+            task.setDateOfCompletion(ZonedDateTime.now());
+        }
         taskRepository.save(task);
     }
 }

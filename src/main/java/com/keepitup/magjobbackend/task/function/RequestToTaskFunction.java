@@ -1,5 +1,6 @@
 package com.keepitup.magjobbackend.task.function;
 
+import com.keepitup.magjobbackend.member.entity.Member;
 import com.keepitup.magjobbackend.organization.entity.Organization;
 import com.keepitup.magjobbackend.task.dto.PostTaskRequest;
 import com.keepitup.magjobbackend.task.entity.Task;
@@ -15,8 +16,12 @@ public class RequestToTaskFunction implements Function<PostTaskRequest, Task> {
                 .title(request.getTitle())
                 .description(request.getDescription())
                 .deadLine(request.getDeadLine())
-                .isImportant(request.getIsImportant())
+                .priority(request.getPriority())
+                .status(request.getStatus())
                 .organization(Organization.builder()
+                        .id(request.getOrganization())
+                        .build())
+                .creator(Member.builder()
                         .id(request.getOrganization())
                         .build())
                 .build();
