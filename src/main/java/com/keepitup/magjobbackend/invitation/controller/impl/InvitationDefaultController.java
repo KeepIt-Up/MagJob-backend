@@ -163,7 +163,18 @@ public class InvitationDefaultController implements InvitationController {
             }
         }
 
-        return service.findByUserAndOrganization(request.getUserId(), request.getOrganization())
+        Optional<Invitation> invitationOptional = service.findByUserAndOrganization(request.getUserId(), request.getOrganization());
+
+        User user = userService.find(request.getUserId()).orElseThrow(
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND)
+        );
+
+        if (invitationOptional.isPresent()) {
+            invitationOptional.get().setUser(user);
+            invitationOptional.get().setOrganization(organization);
+        }
+
+        return invitationOptional
                 .map(invitationToResponse)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
     }

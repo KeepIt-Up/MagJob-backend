@@ -8,7 +8,6 @@ import java.math.BigInteger;
 import java.time.ZonedDateTime;
 import java.util.Optional;
 
-import java.util.List;
 import java.util.UUID;
 
 public interface InvitationService {
