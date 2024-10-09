@@ -138,7 +138,9 @@ public class RoleDefaultController implements RoleController {
 
         roleService.update(updateRoleWithRequestFunction.apply(role, patchRoleRequest));
 
-        return getRole(id);
+        return roleService.find(id)
+                .map(roleToResponseFunction)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
     }
 
     @Override

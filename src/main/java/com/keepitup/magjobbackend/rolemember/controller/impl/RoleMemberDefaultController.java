@@ -21,6 +21,7 @@ import com.keepitup.magjobbackend.rolemember.function.RoleMembersToResponseFunct
 import com.keepitup.magjobbackend.rolemember.service.impl.RoleMemberDefaultService;
 import com.keepitup.magjobbackend.user.entity.User;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -135,12 +136,19 @@ public class RoleMemberDefaultController implements RoleMemberController {
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND)
         ).getUser();
 
-        String roleName = roleService.find(postRoleMemberRequest.getRole()).orElseThrow(
-                () -> new ResponseStatusException(HttpStatus.NOT_FOUND)
-        ).getName();
+        Role role = roleService.find(postRoleMemberRequest.getRole()).orElseThrow(
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+
+        String roleName = role.getName();
+
+        Optional<Page<Role>> memberRoles = roleMemberService.findAllRolesByMember(postRoleMemberRequest.getMember(), Pageable.unpaged());
 
         if (!securityService.hasPermission(organization, Constants.PERMISSION_NAME_CAN_MANAGE_ROLES)) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN);
+        }
+
+        if (memberRoles.isEmpty() || memberRoles.get().stream().toList().contains(role)) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT);
         }
 
         roleMemberService.create(requestToRoleMemberFunction.apply(postRoleMemberRequest));
@@ -168,10 +176,21 @@ public class RoleMemberDefaultController implements RoleMemberController {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN);
         }
 
-        roleMemberService.createAll(requestToRoleMembersFunction.apply(postRoleMembersRequest));
-
         Role role = roleService.find(postRoleMembersRequest.getRoleId()).orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+
+        for (PostRoleMembersRequest.RoleMember roleMemberRequest : postRoleMembersRequest.getRoleMembers()) {
+            BigInteger memberId = roleMemberRequest.getMemberId();
+
+            Optional<Page<Role>> memberRoles = roleMemberService.findAllRolesByMember(memberId, Pageable.unpaged());
+
+            if (memberRoles.isPresent() && memberRoles.get().stream().anyMatch(existingRole -> existingRole.equals(role))) {
+                throw new ResponseStatusException(HttpStatus.CONFLICT, "Member " + memberId + " already has the role");
+            }
+        }
+
+        roleMemberService.createAll(requestToRoleMembersFunction.apply(postRoleMembersRequest));
+
         Integer count = roleMemberService.findAllByRole(role, Pageable.unpaged()).getNumberOfElements();
 
         RoleMember roleMember = roleMemberService.findAllByRole(role, Pageable.unpaged()).getContent().get(0);

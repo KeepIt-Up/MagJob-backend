@@ -24,6 +24,8 @@ public interface RoleMemberService {
 
     Page<RoleMember> findAllByRole(Role role, Pageable pageable);
 
+    Optional<Page<Role>> findAllRolesByMember(BigInteger memberId, Pageable pageable);
+
     void create(RoleMember roleMember);
 
     void createAll(List<RoleMember> roleMembers);

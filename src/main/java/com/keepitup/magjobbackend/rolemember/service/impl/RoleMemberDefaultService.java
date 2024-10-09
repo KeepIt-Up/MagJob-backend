@@ -1,6 +1,7 @@
 package com.keepitup.magjobbackend.rolemember.service.impl;
 
 import com.keepitup.magjobbackend.member.entity.Member;
+import com.keepitup.magjobbackend.member.repository.api.MemberRepository;
 import com.keepitup.magjobbackend.role.entity.Role;
 import com.keepitup.magjobbackend.rolemember.entity.RoleMember;
 import com.keepitup.magjobbackend.rolemember.repository.api.RoleMemberRepository;
@@ -17,10 +18,14 @@ import java.util.Optional;
 @Service
 public class RoleMemberDefaultService implements RoleMemberService {
     private final RoleMemberRepository roleMemberRepository;
+    private final MemberRepository memberRepository;
 
     @Autowired
-    public RoleMemberDefaultService(RoleMemberRepository roleMemberRepository) {
+    public RoleMemberDefaultService(RoleMemberRepository roleMemberRepository,
+                                    MemberRepository memberRepository
+    ) {
         this.roleMemberRepository = roleMemberRepository;
+        this.memberRepository = memberRepository;
     }
 
     @Override
@@ -51,6 +56,13 @@ public class RoleMemberDefaultService implements RoleMemberService {
     @Override
     public Page<RoleMember> findAllByRole(Role role, Pageable pageable) {
         return roleMemberRepository.findAllByRole(role, pageable);
+    }
+
+    @Override
+    public Optional<Page<Role>> findAllRolesByMember(BigInteger memberId, Pageable pageable) {
+        return memberRepository.findById(memberId)
+                .map(member -> roleMemberRepository.findAllByMember(member, pageable))
+                .map(roleMembers -> roleMembers.map(RoleMember::getRole));
     }
 
     @Override
