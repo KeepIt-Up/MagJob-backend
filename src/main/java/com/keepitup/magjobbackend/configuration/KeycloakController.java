@@ -1,16 +1,17 @@
 package com.keepitup.magjobbackend.configuration;
 
+import com.keepitup.magjobbackend.user.entity.User;
 import jakarta.ws.rs.core.Response;
 import org.keycloak.admin.client.Keycloak;
+import org.keycloak.representations.idm.CredentialRepresentation;
 import org.keycloak.representations.idm.GroupRepresentation;
+import org.keycloak.representations.idm.UserRepresentation;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.keycloak.admin.client.CreatedResponseUtil;
 
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 @Component
 public class KeycloakController {
@@ -124,5 +125,27 @@ public class KeycloakController {
         }
 
         return childGroupId;
+    }
+
+    public String createUser(UserRepresentation userRepresentation) {
+        Keycloak keycloak = keycloakUtil.getKeycloakInstance();
+        Response response = keycloak.realm(realm).users().create(userRepresentation);
+        return CreatedResponseUtil.getCreatedId(response);
+    }
+    public static UserRepresentation mapUserToUserRepresentation(User user) {
+        UserRepresentation userRepresentation = new UserRepresentation();
+        userRepresentation.setUsername(user.getFirstname() + user.getLastname());
+        userRepresentation.setEmail(user.getEmail());
+        userRepresentation.setFirstName(user.getFirstname());
+        userRepresentation.setLastName(user.getLastname());
+        userRepresentation.setEnabled(true);
+        List<CredentialRepresentation> creds = new ArrayList<>();
+        CredentialRepresentation cred = new CredentialRepresentation();
+        cred.setTemporary(false);
+        cred.setValue("test");
+        creds.add(cred);
+        userRepresentation.setCredentials(creds);
+
+        return userRepresentation;
     }
 }
