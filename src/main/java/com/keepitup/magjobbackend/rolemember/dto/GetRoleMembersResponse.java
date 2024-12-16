@@ -31,6 +31,12 @@ public class GetRoleMembersResponse {
 
         @Schema(description = "User lastname value")
         private String lastName;
+
+        @Schema(description = "Role id value")
+        private BigInteger roleId;
+
+        @Schema(description = "Member id value")
+        private BigInteger memberId;
     }
 
     @Singular

@@ -17,6 +17,8 @@ public class RoleMembersToResponseFunction implements BiFunction<Page<RoleMember
                                 .id(roleMember.getId())
                                 .firstName(roleMember.getMember().getUser().getFirstname())
                                 .lastName(roleMember.getMember().getUser().getLastname())
+                                .roleId(roleMember.getRole().getId())
+                                .memberId(roleMember.getMember().getId())
                                 .build())
                         .toList())
                 .count(count)
